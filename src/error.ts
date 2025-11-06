@@ -1,14 +1,6 @@
 import { log } from "@dwtechs/winstan";
 import type { Request, Response, NextFunction } from 'express';
 
-// Extend Error interface to include HTTP status properties
-declare global {
-  interface Error {
-    statusCode?: number;
-    status?: number;
-  }
-}
-
 const EC_BAD_REQUEST = 400;
 const EC_UNAUTHORIZED = 401;
 const EC_FORBIDDEN = 403;
@@ -22,15 +14,15 @@ const EC_SERVICE_UNAVAILABLE = 503;
 /**
  * Handles the case when an invalid path is requested.
  */
-const invalidPathHandler = (_req: Request, res: Response, _next: NextFunction) => {
+const invalidPathHandler = (req, res, next) => {
   res.status(EC_NOT_FOUND).send("invalid path");
 };
 
 /**
  * Logs the error stack and message, and passes the error to the next middleware.
  */
-function logError(err: Error, _req: Request, _res: Response, next: NextFunction): void {
-  log.error(err.stack ?? "No stack trace available");
+function logError(err: Error, req: Request, res: Response, next: NextFunction): void {
+  log.error(err.stack);
   log.error(err.message);
   next(err);
 }
@@ -38,11 +30,11 @@ function logError(err: Error, _req: Request, _res: Response, next: NextFunction)
 /**
  * Rolls back the current transaction if any.
  */
-function rollbackTransaction(err: Error, req: Request, _res: Response, next: NextFunction): void {
+function rollbackTransaction(err: Error, req: Request, res: Response, next: NextFunction): void {
   if (req.dbClient)
     req.dbClient
       .query("ROLLBACK")
-      .catch((err: Error) => err)
+      .catch((err) => err)
       .finally(() => req.dbClient.release()); // release to avoid memory leak);
   
   next(err);
@@ -51,8 +43,8 @@ function rollbackTransaction(err: Error, req: Request, _res: Response, next: Nex
 /**
  * send error to the client
  */
-function clientErrorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {
-  const status = err.statusCode || err.status || EC_BAD_REQUEST;
+function clientErrorHandler(err: Error, req: Request, res: Response, next: NextFunction): void {
+  const status = err.statusCode || EC_BAD_REQUEST;
   res.status(status).send(err.message);
 }
 
@@ -87,7 +79,7 @@ function clientErrorHandler(err: Error, _req: Request, res: Response, _next: Nex
  * 
  * @since 1.0.0
  */
-function errorHandler(app) {
+function use(app) {
   // Mandatory error handlers
   app.use(logError);
   // Mandatory if the service uses Postgre
@@ -96,8 +88,8 @@ function errorHandler(app) {
   app.use(invalidPathHandler);
 }
 
-export {
-  errorHandler,
+export default {
+  use,
   EC_BAD_REQUEST,
   EC_UNAUTHORIZED,
   EC_FORBIDDEN,

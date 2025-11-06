@@ -22,7 +22,7 @@
 - 🪶 Very lightweight
 - ⚡ High performance
 - 🔧 Easy to use
-- 📦 Only 1 dependency to log errors
+- Only 1 dependency to log errors
 - 🧪 Thoroughly tested
 - 🚚 Shipped as ECMAScript Express module
 - 📝 Written in TypeScript
