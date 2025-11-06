@@ -94,6 +94,16 @@ Promise.all([
 
 ```typescript
 
+const EC_BAD_REQUEST = 400;
+const EC_UNAUTHORIZED = 401;
+const EC_FORBIDDEN = 403;
+const EC_NOT_FOUND = 404;
+const EC_CONFLICT = 409;
+const EC_MALFORMED_SYNTAX = 422;
+const EC_TOO_MANY_REQUESTS = 429;
+const EC_INTERNAL_ERROR = 500;
+const EC_SERVICE_UNAVAILABLE = 503;
+
 /**
  * Sets up comprehensive error handling middleware for an Express application.
  * This function configures a series of error handlers that should be registered
@@ -128,6 +138,20 @@ Promise.all([
 function use(app) {}
 
 ```
+
+### Exported Constants
+
+| Constant | Value | Description |
+|----------|-------|-------------|
+| `EC_BAD_REQUEST` | 400 | The server cannot process the request due to client error |
+| `EC_UNAUTHORIZED` | 401 | Authentication is required and has failed or not been provided |
+| `EC_FORBIDDEN` | 403 | The client does not have access rights to the content |
+| `EC_NOT_FOUND` | 404 | The server cannot find the requested resource |
+| `EC_CONFLICT` | 409 | Request conflicts with the current state of the server |
+| `EC_MALFORMED_SYNTAX` | 422 | The request was well-formed but contains semantic errors |
+| `EC_TOO_MANY_REQUESTS` | 429 | The user has sent too many requests in a given time |
+| `EC_INTERNAL_ERROR` | 500 | The server encountered an unexpected condition |
+| `EC_SERVICE_UNAVAILABLE` | 503 | The server is not ready to handle the request |
 
 
 ## Logs
