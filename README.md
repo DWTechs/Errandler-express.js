@@ -44,7 +44,7 @@ $ npm i @dwtechs/errandler-express
 
 ## Error Flow Visualization
 
-
+```
 ┌─────────────────┐
 │ Error Occurs    │
 │ next(error)     │
@@ -82,6 +82,7 @@ $ npm i @dwtechs/errandler-express
 │ • Unmatched URL │
 │ • Send 404      │
 └─────────────────┘
+```
 
 
 ## Usage
