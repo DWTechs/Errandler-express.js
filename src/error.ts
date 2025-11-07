@@ -1,5 +1,5 @@
 import { log } from "@dwtechs/winstan";
-import type { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction, Application } from 'express';
 
 // Extend Error interface to include HTTP status properties
 declare global {
@@ -38,10 +38,10 @@ function logError(err: Error, _req: Request, _res: Response, next: NextFunction)
 /**
  * Rolls back the current transaction if any.
  */
-function rollbackTransaction(err: Error, req: Request, _res: Response, next: NextFunction): void {
-  const client = req.dbClient;
+function rollbackTransaction(err: Error, _req: Request, res: Response, next: NextFunction): void {
+  const client = res.locals.dbClient;
   if (client) {
-    req.dbClient = undefined;
+    res.locals.dbClient = undefined;
     client
       .query("ROLLBACK")
       .catch((err: Error) => err)
@@ -93,7 +93,7 @@ function clientErrorHandler(err: Error, _req: Request, res: Response, _next: Nex
  * 
  * @since 1.0.0
  */
-function errorHandler(app) {
+function errorHandler(app: Application): void {
   // Mandatory error handlers
   app.use(logError);
   // Mandatory if the service uses Postgre
