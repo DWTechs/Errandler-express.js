@@ -20,14 +20,33 @@ const EC_INTERNAL_ERROR = 500;
 const EC_SERVICE_UNAVAILABLE = 503;
 
 /**
- * Handles the case when an invalid path is requested.
+ * Express middleware that handles requests to invalid/undefined routes.
+ * This function should be registered as the last middleware to catch all unmatched routes
+ * and return a 404 Not Found response.
+ * 
+ * @param {Request} _req - The Express request object (unused)
+ * @param {Response} res - The Express response object used to send the 404 response
+ * @param {NextFunction} _next - The next middleware function (unused)
+ * 
+ * @returns {void} Sends a 404 response with "invalid path" message
+ * 
  */
 const invalidPathHandler = (_req: Request, res: Response, _next: NextFunction) => {
   res.status(EC_NOT_FOUND).send("invalid path");
 };
 
 /**
- * Logs the error stack and message, and passes the error to the next middleware.
+ * Express error middleware that logs error details for debugging and monitoring.
+ * Logs both the error stack trace and message using the configured logger,
+ * then passes the error to the next error handler in the middleware chain.
+ * 
+ * @param {Error} err - The error object containing stack trace and message
+ * @param {Request} _req - The Express request object (unused)
+ * @param {Response} _res - The Express response object (unused) 
+ * @param {NextFunction} next - Function to pass control to the next error middleware
+ * 
+ * @returns {void} Logs the error and calls next(err) to continue error handling
+ * 
  */
 function logError(err: Error, _req: Request, _res: Response, next: NextFunction): void {
   log.error(err.stack ?? "No stack trace available");
@@ -36,7 +55,18 @@ function logError(err: Error, _req: Request, _res: Response, next: NextFunction)
 }
 
 /**
- * Rolls back the current transaction if any.
+ * Express error middleware that handles database transaction rollback on errors.
+ * When an error occurs during a request that has an active database transaction,
+ * this middleware automatically rolls back the transaction and releases the database client
+ * to prevent connection leaks and maintain data consistency.
+ * 
+ * @param {Error} err - The error object that triggered the rollback
+ * @param {Request} _req - The Express request object (unused)
+ * @param {Response} res - The Express response object containing res.locals.dbClient
+ * @param {NextFunction} next - Function to pass control to the next error middleware
+ * 
+ * @returns {void} Rolls back transaction if present and calls next(err)
+ * 
  */
 function rollbackTransaction(err: Error, _req: Request, res: Response, next: NextFunction): void {
   const client = res.locals.dbClient;
@@ -55,7 +85,18 @@ function rollbackTransaction(err: Error, _req: Request, res: Response, next: Nex
 }
 
 /**
- * send error to the client
+ * Express error middleware that sends formatted error responses to clients.
+ * Extracts the HTTP status code from the error object (or defaults to 400)
+ * and sends an appropriate error response with the error message.
+ * This should be the final error handler before the invalid path handler.
+ * 
+ * @param {Error} err - The error object with optional statusCode or status properties
+ * @param {Request} _req - The Express request object (unused)
+ * @param {Response} res - The Express response object used to send the error response
+ * @param {NextFunction} _next - The next middleware function (unused in final handler)
+ * 
+ * @returns {void} Sends HTTP error response to the client
+ * 
  */
 function clientErrorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {
   const status = err.statusCode || err.status || EC_BAD_REQUEST;
@@ -64,34 +105,39 @@ function clientErrorHandler(err: Error, _req: Request, res: Response, _next: Nex
 
 /**
  * Sets up comprehensive error handling middleware for an Express application.
- * This function configures a series of error handlers that should be registered
+ * This function configures a complete error handling pipeline that should be registered
  * after all other middleware and routes to properly handle errors and invalid paths.
  * 
- * The middleware stack includes:
- * - Error logging (logs error stack and message)
- * - Database transaction rollback (for PostgreSQL connections)
- * - Client error response handling (sends appropriate HTTP status and error message)
- * - Invalid path handling (handles 404 errors for undefined routes)
+ * The middleware stack is applied in the following order:
+ * 1. **Error Logging** - Logs error details for debugging and monitoring
+ * 2. **Transaction Rollback** - Rolls back database transactions on errors (PostgreSQL)
+ * 3. **Client Error Response** - Sends formatted HTTP error responses to clients
+ * 4. **Invalid Path Handling** - Handles 404 errors for undefined routes
  * 
- * @param {import('express').Application} app - The Express application instance to configure
+ * @param {Application} app - The Express application instance to configure with error handlers
+ * 
+ * @returns {void} Configures the application with error handling middleware
  * 
  * @example
  * ```typescript
  * import express from 'express';
- * import errorHandler from './error';
+ * import { errorHandler } from './error';
  * 
  * const app = express();
  * 
- * // Define your routes here
- * app.get('/api/users', (req, res) => {
- *   // route logic
- * });
+ * // Configure your routes and middleware first
+ * app.use(express.json());
+ * app.get('/api/users', getUsersHandler);
+ * app.post('/api/users', createUserHandler);
  * 
- * // Apply error handling middleware (should be last)
- * errorHandler.use(app);
+ * // Apply comprehensive error handling (should be last)
+ * errorHandler(app);
+ * 
+ * app.listen(3000, () => {
+ *   console.log('Server running with error handling configured');
+ * });
  * ```
  * 
- * @since 1.0.0
  */
 function errorHandler(app: Application): void {
   // Mandatory error handlers

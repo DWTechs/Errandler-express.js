@@ -8,6 +8,7 @@
 - [Synopsis](#synopsis)
 - [Support](#support)
 - [Installation](#installation)
+- [Error Flow Visualization](#error-flow-visualization)
 - [Usage](#usage)
 - [API Reference](#api-reference)
 - [Logs](#logs)
@@ -40,6 +41,47 @@ This is the oldest targeted version.
 ```bash
 $ npm i @dwtechs/errandler-express
 ```
+
+## Error Flow Visualization
+
+
+┌─────────────────┐
+│ Error Occurs    │
+│ next(error)     │
+└─────────┬───────┘
+          │
+          ▼
+┌─────────────────┐
+│ Step 1: logError│
+│ • Log stack     │
+│ • Log message   │
+│ • next(err) ────┼──┐
+└─────────────────┘  │
+                     │
+          ┌──────────┘
+          ▼
+┌─────────────────┐
+│Step 2: rollback │
+│ • Check client  │
+│ • ROLLBACK      │
+│ • Release conn  │
+│ • next(err) ────┼──┐
+└─────────────────┘  │
+                     │
+          ┌──────────┘
+          ▼
+┌─────────────────┐
+│Step 3: clientErr│
+│ • Get status    │
+│ • Send response │
+│ • END CHAIN     │
+└─────────────────┘
+
+┌─────────────────┐
+│No route matches:│ 
+│ • Unmatched URL │
+│ • Send 404      │
+└─────────────────┘
 
 
 ## Usage
@@ -106,36 +148,41 @@ const EC_SERVICE_UNAVAILABLE = 503;
 
 /**
  * Sets up comprehensive error handling middleware for an Express application.
- * This function configures a series of error handlers that should be registered
+ * This function configures a complete error handling pipeline that should be registered
  * after all other middleware and routes to properly handle errors and invalid paths.
  * 
- * The middleware stack includes:
- * - Error logging (logs error stack and message)
- * - Database transaction rollback (for PostgreSQL connections)
- * - Client error response handling (sends appropriate HTTP status and error message)
- * - Invalid path handling (handles 404 errors for undefined routes)
+ * The middleware stack is applied in the following order:
+ * 1. **Error Logging** - Logs error details for debugging and monitoring
+ * 2. **Transaction Rollback** - Rolls back database transactions on errors (PostgreSQL)
+ * 3. **Client Error Response** - Sends formatted HTTP error responses to clients
+ * 4. **Invalid Path Handling** - Handles 404 errors for undefined routes
  * 
- * @param {import('express').Application} app - The Express application instance to configure
+ * @param {Application} app - The Express application instance to configure with error handlers
+ * 
+ * @returns {void} Configures the application with error handling middleware
  * 
  * @example
  * ```typescript
  * import express from 'express';
- * import errorHandler from './error';
+ * import { errorHandler } from './error';
  * 
  * const app = express();
  * 
- * // Define your routes here
- * app.get('/api/users', (req, res) => {
- *   // route logic
- * });
+ * // Configure your routes and middleware first
+ * app.use(express.json());
+ * app.get('/api/users', getUsersHandler);
+ * app.post('/api/users', createUserHandler);
  * 
- * // Apply error handling middleware (should be last)
- * errorHandler.use(app);
+ * // Apply comprehensive error handling (should be last)
+ * errorHandler(app);
+ * 
+ * app.listen(3000, () => {
+ *   console.log('Server running with error handling configured');
+ * });
  * ```
  * 
- * @since 1.0.0
  */
-function use(app) {}
+function errorHandler(app) {}
 
 ```
 
