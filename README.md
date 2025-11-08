@@ -8,7 +8,7 @@
 - [Synopsis](#synopsis)
 - [Support](#support)
 - [Installation](#installation)
-- [Error Flow Visualization](#error-flow-visualization)
+- [Error Flow](#error-flow)
 - [Usage](#usage)
 - [API Reference](#api-reference)
 - [Logs](#logs)
@@ -42,7 +42,7 @@ This is the oldest targeted version.
 $ npm i @dwtechs/errandler-express
 ```
 
-## Error Flow Visualization
+## Error Flow
 
 ```
 ┌─────────────────┐
