@@ -11,40 +11,20 @@ declare global {
 
 /**
  * HTTP Error Status Codes grouped by category
+ * Client Error Responses (4xx)
+ * These errors indicate that the client made an error in the request
+ * Server Error Responses (5xx)
+ * These errors indicate that the server encountered an error 
  */
-const ERROR_CODES = {
-  /**
-   * Client Error Responses (4xx)
-   * These errors indicate that the client made an error in the request
-   */
-  CLIENT: {
-    /** 400 - The server cannot process the request due to client error */
-    BAD_REQUEST: 400,
-    /** 401 - Authentication is required and has failed or not been provided */
-    UNAUTHORIZED: 401,
-    /** 403 - The client does not have access rights to the content */
-    FORBIDDEN: 403,
-    /** 404 - The server cannot find the requested resource */
-    NOT_FOUND: 404,
-    /** 409 - Request conflicts with the current state of the server */
-    CONFLICT: 409,
-    /** 422 - The request was well-formed but contains semantic errors */
-    MALFORMED_SYNTAX: 422,
-    /** 429 - The user has sent too many requests in a given time */
-    TOO_MANY_REQUESTS: 429,
-  },
-  /**
-   * Server Error Responses (5xx)
-   * These errors indicate that the server encountered an error
-   */
-  SERVER: {
-    /** 500 - The server encountered an unexpected condition */
-    INTERNAL_ERROR: 500,
-    /** 503 - The server is not ready to handle the request */
-    SERVICE_UNAVAILABLE: 503,
-  }
-} as const;
-
+const EC_CLIENT_BAD_REQUEST = 400; // 400 - The server cannot process the request due to client error 
+const EC_CLIENT_UNAUTHORIZED = 401; // 401 - Authentication is required and has failed or not been provided
+const EC_CLIENT_FORBIDDEN = 403; // 403 - The client does not have access rights to the content
+const EC_CLIENT_NOT_FOUND = 404; // 404 - The server cannot find the requested resource
+const EC_CLIENT_CONFLICT = 409; // 409 - Request conflicts with the current state of the server
+const EC_CLIENT_MALFORMED_SYNTAX = 422; // 422 - The request was well-formed but contains semantic errors
+const EC_CLIENT_TOO_MANY_REQUESTS = 429; // 429 - The user has sent too many requests in a given time
+const EC_SERVER_INTERNAL_ERROR = 500; // 500 - The server encountered an unexpected condition */
+const EC_SERVER_SERVICE_UNAVAILABLE = 503; // 503 - The server is not ready to handle the request */
 
 /**
  * Express middleware that handles requests to invalid/undefined routes.
@@ -59,7 +39,7 @@ const ERROR_CODES = {
  * 
  */
 const invalidPathHandler = (_req: Request, res: Response, _next: NextFunction) => {
-  res.status(EC_NOT_FOUND).send("invalid path");
+  res.status(EC_CLIENT_NOT_FOUND).send("invalid path");
 };
 
 /**
@@ -126,7 +106,7 @@ function rollbackTransaction(err: Error, _req: Request, res: Response, next: Nex
  * 
  */
 function clientErrorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {
-  const status = err.statusCode || err.status || EC_BAD_REQUEST;
+  const status = err.statusCode || err.status || EC_CLIENT_BAD_REQUEST;
   res.status(status).send(err.message);
 }
 
@@ -177,5 +157,13 @@ function errorHandler(app: Application): void {
 
 export {
   errorHandler,
-  ERROR_CODES
+  EC_CLIENT_BAD_REQUEST,
+  EC_CLIENT_CONFLICT,
+  EC_CLIENT_FORBIDDEN,
+  EC_CLIENT_MALFORMED_SYNTAX,
+  EC_CLIENT_NOT_FOUND,
+  EC_CLIENT_TOO_MANY_REQUESTS,
+  EC_CLIENT_UNAUTHORIZED,
+  EC_SERVER_INTERNAL_ERROR,
+  EC_SERVER_SERVICE_UNAVAILABLE,
 };

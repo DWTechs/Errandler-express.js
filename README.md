@@ -130,20 +130,50 @@ Promise.all([
 ### Error Codes
 
 ```typescript
-import { ERROR_CODES } from '@dwtechs/errandler-express';
+import { 
+  EC_CLIENT_BAD_REQUEST, 
+  EC_CLIENT_UNAUTHORIZED, 
+  EC_CLIENT_FORBIDDEN, 
+  EC_CLIENT_NOT_FOUND,
+  EC_CLIENT_CONFLICT,
+  EC_CLIENT_MALFORMED_SYNTAX,
+  EC_CLIENT_TOO_MANY_REQUESTS,
+  EC_SERVER_INTERNAL_ERROR, 
+  EC_SERVER_SERVICE_UNAVAILABLE
+ } from '@dwtechs/errandler-express';
 
-// Client errors (4xx)
-res.status(ERROR_CODES.CLIENT.BAD_REQUEST);      // 400
-res.status(ERROR_CODES.CLIENT.UNAUTHORIZED);     // 401
-res.status(ERROR_CODES.CLIENT.FORBIDDEN);        // 403
-res.status(ERROR_CODES.CLIENT.NOT_FOUND);        // 404
-res.status(ERROR_CODES.CLIENT.CONFLICT);         // 409
-res.status(ERROR_CODES.CLIENT.MALFORMED_SYNTAX); // 422
-res.status(ERROR_CODES.CLIENT.TOO_MANY_REQUESTS);// 429
+// Create custom errors with status codes
+function createValidationError(message: string) {
+  const error = new Error(message);
+  error.statusCode = EC_CLIENT_BAD_REQUEST;
+  return error;
+}
 
-// Server errors (5xx)
-res.status(ERROR_CODES.SERVER.INTERNAL_ERROR);     // 500
-res.status(ERROR_CODES.SERVER.SERVICE_UNAVAILABLE);// 503
+// Use in middleware
+app.use('/api/protected', (req, res, next) => {
+  if (!req.user) {
+    return res.status(EC_CLIENT_UNAUTHORIZED)
+              .send('Authentication required');
+  }
+  next();
+});
+
+// Error handling in routes
+app.get('/api/users/:id', async (req, res, next) => {
+  try {
+    const user = await getUserById(req.params.id);
+    if (!user) {
+      return res.status(EC_CLIENT_NOT_FOUND)
+                .send('User not found');
+    }
+    res.json(user);
+  } catch (error) {
+    error.statusCode = EC_SERVER_INTERNAL_ERROR;
+    next(error);
+  }
+});
+
+
 ```
 
 ## API Reference
@@ -152,41 +182,21 @@ res.status(ERROR_CODES.SERVER.SERVICE_UNAVAILABLE);// 503
 ```typescript
 
 /**
- * HTTP Error Status Codes grouped by category
+ * Exported HTTP Error Status Codes grouped by category
+ * Client Error Responses (4xx)
+ * These errors indicate that the client made an error in the request
+ * Server Error Responses (5xx)
+ * These errors indicate that the server encountered an error 
  */
-const ERROR_CODES = {
-  /**
-   * Client Error Responses (4xx)
-   * These errors indicate that the client made an error in the request
-   */
-  CLIENT: {
-    /** 400 - The server cannot process the request due to client error */
-    BAD_REQUEST: 400,
-    /** 401 - Authentication is required and has failed or not been provided */
-    UNAUTHORIZED: 401,
-    /** 403 - The client does not have access rights to the content */
-    FORBIDDEN: 403,
-    /** 404 - The server cannot find the requested resource */
-    NOT_FOUND: 404,
-    /** 409 - Request conflicts with the current state of the server */
-    CONFLICT: 409,
-    /** 422 - The request was well-formed but contains semantic errors */
-    MALFORMED_SYNTAX: 422,
-    /** 429 - The user has sent too many requests in a given time */
-    TOO_MANY_REQUESTS: 429,
-  },
-  /**
-   * Server Error Responses (5xx)
-   * These errors indicate that the server encountered an error
-   */
-  SERVER: {
-    /** 500 - The server encountered an unexpected condition */
-    INTERNAL_ERROR: 500,
-    /** 503 - The server is not ready to handle the request */
-    SERVICE_UNAVAILABLE: 503,
-  }
-} as const;
-
+const EC_CLIENT_BAD_REQUEST = 400; // 400 - The server cannot process the request due to client error 
+const EC_CLIENT_UNAUTHORIZED = 401; // 401 - Authentication is required and has failed or not been provided
+const EC_CLIENT_FORBIDDEN = 403; // 403 - The client does not have access rights to the content
+const EC_CLIENT_NOT_FOUND = 404; // 404 - The server cannot find the requested resource
+const EC_CLIENT_CONFLICT = 409; // 409 - Request conflicts with the current state of the server
+const EC_CLIENT_MALFORMED_SYNTAX = 422; // 422 - The request was well-formed but contains semantic errors
+const EC_CLIENT_TOO_MANY_REQUESTS = 429; // 429 - The user has sent too many requests in a given time
+const EC_SERVER_INTERNAL_ERROR = 500; // 500 - The server encountered an unexpected condition */
+const EC_SERVER_SERVICE_UNAVAILABLE = 503; // 503 - The server is not ready to handle the request */
 
 /**
  * Sets up comprehensive error handling middleware for an Express application.
@@ -241,43 +251,6 @@ function errorHandler(app) {}
 | Client | `TOO_MANY_REQUESTS` | 429 | The user has sent too many requests in a given time |
 | Server | `INTERNAL_ERROR` | 500 | The server encountered an unexpected condition |
 | Server | `SERVICE_UNAVAILABLE` | 503 | The server is not ready to handle the request |
-
-### Usage Examples
-
-```typescript
-import { ERROR_CODES } from '@dwtechs/errandler-express';
-
-// Create custom errors with status codes
-function createValidationError(message: string) {
-  const error = new Error(message);
-  error.statusCode = ERROR_CODES.CLIENT.BAD_REQUEST;
-  return error;
-}
-
-// Use in middleware
-app.use('/api/protected', (req, res, next) => {
-  if (!req.user) {
-    return res.status(ERROR_CODES.CLIENT.UNAUTHORIZED)
-              .send('Authentication required');
-  }
-  next();
-});
-
-// Error handling in routes
-app.get('/api/users/:id', async (req, res, next) => {
-  try {
-    const user = await getUserById(req.params.id);
-    if (!user) {
-      return res.status(ERROR_CODES.CLIENT.NOT_FOUND)
-                .send('User not found');
-    }
-    res.json(user);
-  } catch (error) {
-    error.statusCode = ERROR_CODES.SERVER.INTERNAL_ERROR;
-    next(error);
-  }
-});
-```
 
 
 ## Logs

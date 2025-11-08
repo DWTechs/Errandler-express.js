@@ -26,17 +26,17 @@ https://github.com/DWTechs/Errandler-express.js
 
 import { log } from '@dwtechs/winstan';
 
-const EC_BAD_REQUEST = 400;
-const EC_UNAUTHORIZED = 401;
-const EC_FORBIDDEN = 403;
-const EC_NOT_FOUND = 404;
-const EC_CONFLICT = 409;
-const EC_MALFORMED_SYNTAX = 422;
-const EC_TOO_MANY_REQUESTS = 429;
-const EC_INTERNAL_ERROR = 500;
-const EC_SERVICE_UNAVAILABLE = 503;
+const EC_CLIENT_BAD_REQUEST = 400;
+const EC_CLIENT_UNAUTHORIZED = 401;
+const EC_CLIENT_FORBIDDEN = 403;
+const EC_CLIENT_NOT_FOUND = 404;
+const EC_CLIENT_CONFLICT = 409;
+const EC_CLIENT_MALFORMED_SYNTAX = 422;
+const EC_CLIENT_TOO_MANY_REQUESTS = 429;
+const EC_SERVER_INTERNAL_ERROR = 500;
+const EC_SERVER_SERVICE_UNAVAILABLE = 503;
 const invalidPathHandler = (_req, res, _next) => {
-    res.status(EC_NOT_FOUND).send("invalid path");
+    res.status(EC_CLIENT_NOT_FOUND).send("invalid path");
 };
 function logError(err, _req, _res, next) {
     var _a;
@@ -61,7 +61,7 @@ function rollbackTransaction(err, _req, res, next) {
     next(err);
 }
 function clientErrorHandler(err, _req, res, _next) {
-    const status = err.statusCode || err.status || EC_BAD_REQUEST;
+    const status = err.statusCode || err.status || EC_CLIENT_BAD_REQUEST;
     res.status(status).send(err.message);
 }
 function errorHandler(app) {
@@ -71,4 +71,4 @@ function errorHandler(app) {
     app.use(invalidPathHandler);
 }
 
-export { EC_BAD_REQUEST, EC_CONFLICT, EC_FORBIDDEN, EC_INTERNAL_ERROR, EC_MALFORMED_SYNTAX, EC_NOT_FOUND, EC_SERVICE_UNAVAILABLE, EC_TOO_MANY_REQUESTS, EC_UNAUTHORIZED, errorHandler };
+export { EC_CLIENT_BAD_REQUEST, EC_CLIENT_CONFLICT, EC_CLIENT_FORBIDDEN, EC_CLIENT_MALFORMED_SYNTAX, EC_CLIENT_NOT_FOUND, EC_CLIENT_TOO_MANY_REQUESTS, EC_CLIENT_UNAUTHORIZED, EC_SERVER_INTERNAL_ERROR, EC_SERVER_SERVICE_UNAVAILABLE, errorHandler };

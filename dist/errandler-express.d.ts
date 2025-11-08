@@ -24,21 +24,30 @@ SOFTWARE.
 https://github.com/DWTechs/Errandler-express.js
 */
 
-import type { Request, Response, NextFunction } from 'express';
+import type { Application } from 'express';
 
-declare function getConsumer(req: Request, res: Response, next: NextFunction): void;
+declare const EC_CLIENT_BAD_REQUEST = 400;
+declare const EC_CLIENT_UNAUTHORIZED = 401;
+declare const EC_CLIENT_FORBIDDEN = 403;
+declare const EC_CLIENT_NOT_FOUND = 404;
+declare const EC_CLIENT_CONFLICT = 409;
+declare const EC_CLIENT_MALFORMED_SYNTAX = 422;
+declare const EC_CLIENT_TOO_MANY_REQUESTS = 429;
+declare const EC_SERVER_INTERNAL_ERROR = 500;
+declare const EC_SERVER_SERVICE_UNAVAILABLE = 503;
+declare function errorHandler(app: Application): void;
 
 export { 
-  use,
-  EC_BAD_REQUEST,
-  EC_UNAUTHORIZED,
-  EC_FORBIDDEN,
-  EC_NOT_FOUND,
-  EC_MALFORMED_SYNTAX,
-  EC_INTERNAL_ERROR,
-  EC_CONFLICT,
-  EC_TOO_MANY_REQUESTS,
-  EC_SERVICE_UNAVAILABLE,
+  errorHandler,
+  EC_CLIENT_BAD_REQUEST,
+  EC_CLIENT_CONFLICT,
+  EC_CLIENT_FORBIDDEN,
+  EC_CLIENT_MALFORMED_SYNTAX,
+  EC_CLIENT_NOT_FOUND,
+  EC_CLIENT_TOO_MANY_REQUESTS,
+  EC_CLIENT_UNAUTHORIZED,
+  EC_SERVER_INTERNAL_ERROR,
+  EC_SERVER_SERVICE_UNAVAILABLE,
 };
 
 
