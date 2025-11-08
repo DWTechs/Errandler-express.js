@@ -51,14 +51,14 @@ $ npm i @dwtechs/errandler-express
 └─────────┬───────┘
           │
           ▼
-┌─────────────────┐
-│ Step 1: logError│
-│ • Log stack     │
-│ • Log message   │
-│ • next(err) ────┼──┐
-└─────────────────┘  │
-                     │
-          ┌──────────┘
+┌──────────────────┐
+│ Step 1: logError │
+│ • Log stack      │
+│ • Log message    │
+│ • next(err) ─────┼──┐
+└──────────────────┘  │
+                      │
+          ┌───────────┘
           ▼
 ┌───────────────────┐
 │Step 2: rollback   │
@@ -70,12 +70,12 @@ $ npm i @dwtechs/errandler-express
                       │
           ┌───────────┘
           ▼
-┌─────────────────┐
-│Step 3: clientErr│
-│ • Get status    │
-│ • Send response │
-│ • END CHAIN     │
-└─────────────────┘
+┌──────────────────┐
+│Step 3: clientErr │
+│ • Get status     │
+│ • Send response  │
+│ • END CHAIN      │
+└──────────────────┘
 
 ┌─────────────────┐
 │No route matches │ 
