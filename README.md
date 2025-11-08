@@ -21,9 +21,9 @@
 **[Errandler-express.js](https://github.com/DWTechs/Errandler-express.js)** is an open source Errandler gateway toolset for Express.js.  
 
 - 🪶 Very lightweight
-- ⚡ High performance
+- ⚡  High performance
 - 🔧 Easy to use
-- Only 1 dependency to log errors
+- 📦 Only 1 dependency to log errors
 - 🧪 Thoroughly tested
 - 🚚 Shipped as ECMAScript Express module
 - 📝 Written in TypeScript
