@@ -61,7 +61,7 @@ $ npm i @dwtechs/errandler-express
           ┌───────────┘
           ▼
 ┌───────────────────┐
-│Step 2: rollback   │
+│ Step 2: rollback  │
 │ • Check db client │
 │ • ROLLBACK        │
 │ • Release conn    │
@@ -70,18 +70,18 @@ $ npm i @dwtechs/errandler-express
                       │
           ┌───────────┘
           ▼
-┌──────────────────┐
-│Step 3: clientErr │
-│ • Get status     │
-│ • Send response  │
-│ • END CHAIN      │
-└──────────────────┘
+┌───────────────────┐
+│ Step 3: clientErr │
+│ • Get status      │
+│ • Send response   │
+│ • END CHAIN       │
+└───────────────────┘
 
-┌─────────────────┐
-│No route matches │ 
-│ • Unmatched URL │
-│ • Send 404      │
-└─────────────────┘
+┌──────────────────┐
+│ No route matches │ 
+│ • Unmatched URL  │
+│ • Send 404       │
+└──────────────────┘
 ```
 
 
