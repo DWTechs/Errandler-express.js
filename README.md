@@ -232,15 +232,15 @@ function errorHandler(app) {}
 
 | Category | Code | Value | Description |
 |----------|------|-------|-------------|
-| **CLIENT** | `BAD_REQUEST` | 400 | The server cannot process the request due to client error |
-| **CLIENT** | `UNAUTHORIZED` | 401 | Authentication is required and has failed or not been provided |
-| **CLIENT** | `FORBIDDEN` | 403 | The client does not have access rights to the content |
-| **CLIENT** | `NOT_FOUND` | 404 | The server cannot find the requested resource |
-| **CLIENT** | `CONFLICT` | 409 | Request conflicts with the current state of the server |
-| **CLIENT** | `MALFORMED_SYNTAX` | 422 | The request was well-formed but contains semantic errors |
-| **CLIENT** | `TOO_MANY_REQUESTS` | 429 | The user has sent too many requests in a given time |
-| **SERVER** | `INTERNAL_ERROR` | 500 | The server encountered an unexpected condition |
-| **SERVER** | `SERVICE_UNAVAILABLE` | 503 | The server is not ready to handle the request |
+| Client | `BAD_REQUEST` | 400 | The server cannot process the request due to Client error |
+| Client | `UNAUTHORIZED` | 401 | Authentication is required and has failed or not been provided |
+| Client | `FORBIDDEN` | 403 | The Client does not have access rights to the content |
+| Client | `NOT_FOUND` | 404 | The server cannot find the requested resource |
+| Client | `CONFLICT` | 409 | Request conflicts with the current state of the server |
+| Client | `MALFORMED_SYNTAX` | 422 | The request was well-formed but contains semantic errors |
+| Client | `TOO_MANY_REQUESTS` | 429 | The user has sent too many requests in a given time |
+| Server | `INTERNAL_ERROR` | 500 | The server encountered an unexpected condition |
+| Server | `SERVICE_UNAVAILABLE` | 503 | The server is not ready to handle the request |
 
 ### Usage Examples
 
