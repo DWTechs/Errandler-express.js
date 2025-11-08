@@ -242,17 +242,17 @@ function errorHandler(app) {}
 
 ### Error Code Reference
 
-| Category | Code | Value | Description |
-|----------|------|-------|-------------|
-| Client | `BAD_REQUEST` | 400 | The server cannot process the request due to Client error |
-| Client | `UNAUTHORIZED` | 401 | Authentication is required and has failed or not been provided |
-| Client | `FORBIDDEN` | 403 | The Client does not have access rights to the content |
-| Client | `NOT_FOUND` | 404 | The server cannot find the requested resource |
-| Client | `CONFLICT` | 409 | Request conflicts with the current state of the server |
-| Client | `MALFORMED_SYNTAX` | 422 | The request was well-formed but contains semantic errors |
-| Client | `TOO_MANY_REQUESTS` | 429 | The user has sent too many requests in a given time |
-| Server | `INTERNAL_ERROR` | 500 | The server encountered an unexpected condition |
-| Server | `SERVICE_UNAVAILABLE` | 503 | The server is not ready to handle the request |
+| Code | Value | Description |
+|------|-------|-------------|
+| `EC_CLIENT_BAD_REQUEST` | 400 | The server cannot process the request due to Client error |
+| `EC_CLIENT_UNAUTHORIZED` | 401 | Authentication is required and has failed or not been provided |
+| `EC_CLIENT_FORBIDDEN` | 403 | The Client does not have access rights to the content |
+| `EC_CLIENT_NOT_FOUND` | 404 | The server cannot find the requested resource |
+| `EC_CLIENT_CONFLICT` | 409 | Request conflicts with the current state of the server |
+| `EC_CLIENT_MALFORMED_SYNTAX` | 422 | The request was well-formed but contains semantic errors |
+| `EC_CLIENT_TOO_MANY_REQUESTS` | 429 | The user has sent too many requests in a given time |
+| `EC_SERVER_INTERNAL_ERROR` | 500 | The server encountered an unexpected condition |
+| `EC_SERVER_SERVICE_UNAVAILABLE` | 503 | The server is not ready to handle the request |
 
 
 ## Logs
