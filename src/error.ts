@@ -9,15 +9,42 @@ declare global {
   }
 }
 
-const EC_BAD_REQUEST = 400;
-const EC_UNAUTHORIZED = 401;
-const EC_FORBIDDEN = 403;
-const EC_NOT_FOUND = 404;
-const EC_CONFLICT = 409;
-const EC_MALFORMED_SYNTAX = 422;
-const EC_TOO_MANY_REQUESTS = 429;
-const EC_INTERNAL_ERROR = 500;
-const EC_SERVICE_UNAVAILABLE = 503;
+/**
+ * HTTP Error Status Codes grouped by category
+ */
+const ERROR_CODES = {
+  /**
+   * Client Error Responses (4xx)
+   * These errors indicate that the client made an error in the request
+   */
+  CLIENT: {
+    /** 400 - The server cannot process the request due to client error */
+    BAD_REQUEST: 400,
+    /** 401 - Authentication is required and has failed or not been provided */
+    UNAUTHORIZED: 401,
+    /** 403 - The client does not have access rights to the content */
+    FORBIDDEN: 403,
+    /** 404 - The server cannot find the requested resource */
+    NOT_FOUND: 404,
+    /** 409 - Request conflicts with the current state of the server */
+    CONFLICT: 409,
+    /** 422 - The request was well-formed but contains semantic errors */
+    MALFORMED_SYNTAX: 422,
+    /** 429 - The user has sent too many requests in a given time */
+    TOO_MANY_REQUESTS: 429,
+  },
+  /**
+   * Server Error Responses (5xx)
+   * These errors indicate that the server encountered an error
+   */
+  SERVER: {
+    /** 500 - The server encountered an unexpected condition */
+    INTERNAL_ERROR: 500,
+    /** 503 - The server is not ready to handle the request */
+    SERVICE_UNAVAILABLE: 503,
+  }
+} as const;
+
 
 /**
  * Express middleware that handles requests to invalid/undefined routes.
@@ -150,13 +177,5 @@ function errorHandler(app: Application): void {
 
 export {
   errorHandler,
-  EC_BAD_REQUEST,
-  EC_UNAUTHORIZED,
-  EC_FORBIDDEN,
-  EC_NOT_FOUND,
-  EC_MALFORMED_SYNTAX,
-  EC_INTERNAL_ERROR,
-  EC_CONFLICT,
-  EC_TOO_MANY_REQUESTS,
-  EC_SERVICE_UNAVAILABLE
+  ERROR_CODES
 };
