@@ -87,6 +87,8 @@ $ npm i @dwtechs/errandler-express
 
 ## Usage
 
+### Error Handler
+
 ```javascript
 
 // @ts-check
