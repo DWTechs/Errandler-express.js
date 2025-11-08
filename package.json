@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "Open source Error handler for Express.js services.",
   "keywords": [
-    "Gateway"
+    "Error",
+    "Error handler"
   ],
   "homepage": "https://github.com/DWTechs/Errandler-express.js",
   "main": "dist/errandler-express",
