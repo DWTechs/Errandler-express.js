@@ -67,12 +67,44 @@ function logError(err: Error, _req: Request, _res: Response, next: NextFunction)
  * this middleware automatically rolls back the transaction and releases the database client
  * to prevent connection leaks and maintain data consistency.
  * 
+ * **Database Client Location:**
+ * The database client must be stored in `res.locals.dbClient` and should be a PostgreSQL
+ * client instance with `query()` and `release()` methods. This is typically set up by
+ * a middleware that runs before your routes to establish database connections and transactions.
+ * 
  * @param {Error} err - The error object that triggered the rollback
  * @param {Request} _req - The Express request object (unused)
- * @param {Response} res - The Express response object containing res.locals.dbClient
+ * @param {Response} res - The Express response object. Must contain `res.locals.dbClient`
+ *   - `res.locals.dbClient` should be a PostgreSQL client instance
+ *   - Client must have `query(sql)` method for executing ROLLBACK
+ *   - Client must have `release()` method for returning connection to pool
  * @param {NextFunction} next - Function to pass control to the next error middleware
  * 
  * @returns {void} Rolls back transaction if present and calls next(err)
+ * 
+ * @example
+ * ```typescript
+ * import { Pool } from 'pg';
+ * 
+ * const pool = new Pool(dbConfig);
+ * 
+ * // Middleware to set up database client and transaction
+ * app.use(async (req, res, next) => {
+ *   try {
+ *     const client = await pool.connect();
+ *     await client.query('BEGIN');
+ *     res.locals.dbClient = client; // ← Must be stored here
+ *     next();
+ *   } catch (error) {
+ *     next(error);
+ *   }
+ * });
+ * 
+ * // Your routes here...
+ * 
+ * // Error handler will automatically rollback if error occurs
+ * app.use(rollbackTransaction);
+ * ```
  * 
  */
 function rollbackTransaction(err: Error, _req: Request, res: Response, next: NextFunction): void {

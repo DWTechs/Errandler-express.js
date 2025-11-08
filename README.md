@@ -9,6 +9,7 @@
 - [Support](#support)
 - [Installation](#installation)
 - [Error Flow](#error-flow)
+- [Database Transaction Rollback](#database-transaction-rollback)
 - [Usage](#usage)
 - [API Reference](#api-reference)
 - [Logs](#logs)
@@ -83,6 +84,23 @@ $ npm i @dwtechs/errandler-express
 │ • Send 404       │
 └──────────────────┘
 ```
+
+## Database Transaction Rollback
+
+The error handling pipeline automatically manages database transaction rollback when errors occur, ensuring data consistency and preventing connexion leaks.
+
+The `rollbackTransaction` middleware automatically detects a database client stored in `res.locals.dbClient` and performs rollback operations when errors occur:
+
+1. **Detects Active Transaction**: Checks for database client in `res.locals.dbClient`
+2. **Executes ROLLBACK**: Runs `ROLLBACK` command to undo pending changes
+3. **Releases Connection**: Returns connection to pool preventing memory leaks
+4. **Cleans Up**: Sets `res.locals.dbClient` to `undefined`
+
+### Requirements
+
+- Database client must be stored in `res.locals.dbClient`
+- Client must have `query(sql)` and `release()` methods
+- Transaction should be active (`BEGIN` already executed)
 
 
 ## Usage
@@ -207,7 +225,7 @@ const EC_SERVER_SERVICE_UNAVAILABLE = 503; // 503 - The server is not ready to h
  * 
  * The middleware stack is applied in the following order:
  * 1. **Error Logging** - Logs error details for debugging and monitoring
- * 2. **Transaction Rollback** - Rolls back database transactions on errors (PostgreSQL)
+ * 2. **DB Transaction Rollback** - Rolls back database transactions on errors (PostgreSQL)
  * 3. **Client Error Response** - Sends formatted HTTP error responses to clients
  * 4. **Invalid Path Handling** - Handles 404 errors for undefined routes
  * 
@@ -253,6 +271,8 @@ function errorHandler(app) {}
 | `EC_CLIENT_TOO_MANY_REQUESTS` | 429 | The user has sent too many requests in a given time |
 | `EC_SERVER_INTERNAL_ERROR` | 500 | The server encountered an unexpected condition |
 | `EC_SERVER_SERVICE_UNAVAILABLE` | 503 | The server is not ready to handle the request |
+
+
 
 
 ## Logs
