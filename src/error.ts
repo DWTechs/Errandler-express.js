@@ -44,20 +44,30 @@ const invalidPathHandler = (_req: Request, res: Response, _next: NextFunction) =
 
 /**
  * Express error middleware that logs error details for debugging and monitoring.
- * Logs both the error stack trace and message using the configured logger,
- * then passes the error to the next error handler in the middleware chain.
- * 
- * @param {Error} err - The error object containing stack trace and message
+ * Emits a single log line so operators don't have to correlate two lines for one error:
+ * - Real `Error` instances → log `err.stack` (already contains the message on its first line).
+ * - `next({ statusCode, message })`-style plain object errors (no stack) → log
+ *   `"<statusCode> <message>"` so 400 responses show up in logs as e.g.
+ *   `"400 Passken-express: Missing hash from the database…"` instead of the previous
+ *   two-line `"No stack trace available"` + message pair.
+ * - Anything else (thrown strings, objects without `.message`) → log a JSON dump.
+ *
+ * @param {Error} err - The error object or plain error-shaped value
  * @param {Request} _req - The Express request object (unused)
- * @param {Response} _res - The Express response object (unused) 
+ * @param {Response} _res - The Express response object (unused)
  * @param {NextFunction} next - Function to pass control to the next error middleware
- * 
+ *
  * @returns {void} Logs the error and calls next(err) to continue error handling
- * 
+ *
  */
 function logError(err: Error, _req: Request, _res: Response, next: NextFunction): void {
-  log.error(err.stack ?? "No stack trace available");
-  log.error(err.message);
+  if (err?.stack) {
+    log.error(err.stack);
+  } else {
+    const status = err?.statusCode ?? err?.status;
+    const message = err?.message ?? (typeof err === "string" ? err : JSON.stringify(err));
+    log.error(status ? `${status} ${message}` : message);
+  }
   next(err);
 }
 
